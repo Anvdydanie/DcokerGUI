@@ -7,7 +7,13 @@ import (
 	"net/http"
 )
 
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+}
+
 func ContainerHandler(w http.ResponseWriter, req *http.Request) {
+	enableCors(&w)
+
 	var result []byte
 	var path = req.Method + " " + req.URL.Path
 	var params = req.URL.Query()
@@ -62,7 +68,7 @@ func ContainerHandler(w http.ResponseWriter, req *http.Request) {
 	}
 
 	if err != nil {
-		w.Write([]byte(err.Error()))
+		http.Error(w, err.Error(), http.StatusBadGateway)
 	}
 	w.Write(result)
 }
